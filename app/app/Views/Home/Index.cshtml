@@ -1,0 +1,32 @@
+﻿@{
+    ViewBag.Title = "Home Page";
+}
+
+@section Scripts {
+    <script type="text/javascript">
+        //  Bind the event handler to the "submit" JavaScript event
+        $('form').submit(function () {
+            // Get the password field.
+            var password = $.trim($('#password').val());
+            var email = $.trim($('#email').val());
+
+            // Check if empty or not
+            if (email === '') {
+                alert('Email cannot be empty.');
+                return false;
+            }
+
+            // Check if empty or not
+            if (password === '') {
+                alert('Password cannot be empty.');
+                return false;
+            }
+        });
+    </script>
+}
+
+<div class="jumbotron">
+    <h1>JIRA</h1>
+    <p class="lead">JIRA is issue trackting system to develop the web application based on agile process.</p>
+    <p><a href="/Home/Dashboard" class="btn btn-primary btn-lg">Learn more &raquo;</a></p>
+</div>

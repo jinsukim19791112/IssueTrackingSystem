@@ -1,0 +1,134 @@
+﻿<link rel="stylesheet" href="//code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css">
+<script src="//code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
+
+@section Scripts {
+    <script type="text/javascript">
+        $("#startDate").datepicker();
+        $("#endDate").datepicker();
+
+        // process the form
+        $('form').submit(function (event) {
+
+            // get the form data
+            // there are many ways to get this data using jQuery (you can use the class or id also)
+            var formData = {
+                'name': $('input[name=name]').val(),
+                'startDate': $('input[name=startDate]').val(),
+                'endDate': $('input[name=endDate]').val(),
+            };
+
+            // process the form
+            $.ajax({
+                type: 'POST', // define the type of HTTP verb we want to use (POST for our form)
+                url: '/home/NewProject', // the url where we want to POST
+                data: formData, // our data object
+                dataType: 'json', // what type of data do we expect back from the server
+                encode: true
+            })
+                // using the done promise callback
+                .done(function (data) {
+                    if (data.code == "200") {
+                        alert(data.msg);
+                        location.href = '/Home/ProjectList';
+                    }
+                }).fail(function () {
+                    alert("request failed.");
+                });
+
+            // stop the form from submitting the normal way and refreshing the page
+            event.preventDefault();
+        });
+
+        // Function to get url parameter
+        function getUrlParameter(sParam) {
+            var sPageURL = window.location.search.substring(1);
+            var sURLVariables = sPageURL.split('&');
+            for (var i = 0; i < sURLVariables.length; i++) {
+                var sParameterName = sURLVariables[i].split('=');
+                if (sParameterName[0] == sParam) {
+                    return sParameterName[1];
+                }
+            }
+        }
+
+        // Set Page Title
+        var pageType = getUrlParameter("type");
+        if (pageType == "N") {
+            $("#title").html("New Project");
+            $("#submitBtn").html("New");
+            $("#status").prop("disabled", true);
+        }
+        else if (pageType == "E") {
+            $("#title").html("Edit Project");
+            $("#submitBtn").html("Edit");
+            var id = getUrlParameter("id");
+            RequestProjectDetail(id);
+            $("input").prop("disabled", false);
+        }
+        else if (pageType == "V") {
+            $("#title").html("View Project");
+            var id = getUrlParameter("id");
+            RequestProjectDetail(id);
+            $("#submitBtn").hide();
+            $("input").prop("disabled", true);
+            $("#status").prop("disabled", true);
+        }
+
+        function RequestProjectDetail(id) {
+            $.ajax({
+                type: 'GET', // define the type of HTTP verb we want to use.
+                url: '/home/GetProjectWithID', // the url where we want to GET
+                data: {
+                    "id": id
+                }
+            })
+                // using the done promise callback
+                .done(function (data) {
+                    $('input[name=name]').val(data.Name);
+                    $('input[name=startDate]').val(data.StartDate);
+                    $('input[name=endDate]').val(data.EndDate);
+                }).fail(function () {
+                    alert("request failed.");
+                });
+        }
+    </script>
+}
+
+<h2 id="title"></h2>
+<br />
+<br />
+<form class="form-horizontal">
+    <div class="form-group">
+        <label for="inputEmail3" class="col-sm-2 control-label">Name</label>
+        <div class="col-sm-10">
+            <input class="form-control" name="name" id="name" placeholder="Project Name" value="@Request.Form["name"]">
+        </div>
+    </div>
+    <div class="form-group">
+        <label for="inputPassword3" class="col-sm-2 control-label">Start Date</label>
+        <div class="col-sm-10">
+            <input class="form-control" name="startDate" id="startDate" placeholder="Start Date" value="@Request.Form["startDate"]">
+        </div>
+    </div>
+    <div class="form-group">
+        <label for="inputPassword3" class="col-sm-2 control-label">End Date</label>
+        <div class="col-sm-10">
+            <input class="form-control" name="endDate" id="endDate" placeholder="End Date" value="@Request.Form["endDate"]">
+        </div>
+    </div>
+    <div class="form-group">
+        <label for="inputPassword3" class="col-sm-2 control-label">Status</label>
+        <div class="col-sm-10">
+            <select class="form-control" name="status" id="status" value="@Request.Form["status"]">
+                <option>Open</option>
+            </select>
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="col-sm-offset-2 col-sm-10">
+            <button id="submitBtn" type="submit" class="btn btn-success"></button>
+            <a href="/Home/ProjectList" id="backBtn" class="btn btn-default"><i class="fa fa-arrow-circle-o-left"></i>&nbsp;Back</a>
+        </div>
+    </div>
+</form>
+

@@ -1,0 +1,101 @@
+﻿@{
+    ViewBag.Title = "Project";
+}
+<h2>
+    @ViewBag.Title.
+</h2>
+
+<style>
+    tr:hover {
+        cursor: pointer;
+    }
+
+    .fa-pencil {
+        opacity: 0.5;
+    }
+
+    .fa-pencil:hover {
+        opacity: 1;
+    }
+
+    .fa-trash-o {
+        opacity: 0.5;
+    }
+
+     .fa-trash-o:hover {
+        opacity: 1;
+    }
+</style>
+<br />
+<div class="row">
+    <div class="col-md-2">
+        <a class="btn btn-success" href="/home/Project?type=N" role="button">New</a>
+    </div>
+</div>
+<div class="row">
+    <div class="col-md-10">
+        <hr />
+        <table id="projectTable" class="display">
+            <thead>
+                <tr>
+                    <th>Id</th>
+                    <th>Name</th>
+                    <th>StartDate</th>
+                    <th>EndDate</th>
+                    <th>Status</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+    </div>
+</div>
+
+@section Scripts {
+    <script type="text/javascript">
+        var data = @Html.Raw(Json.Encode(Model));
+
+        $('#projectTable').DataTable({
+            bProcessing: true,
+            sAjaxSource: '@Url.Action("GetProjectTable", "Home")',
+            aoColumns: [
+                 { bSortable: false, },
+                 { bSortable: false, },
+                 { bSortable: false, },
+                 { bSortable: false, },
+                 { bSortable: false, },
+                 {
+                     bSortable: false,
+                     mRender: function (o) { return '<i id="pencil" class="ui-tooltip fa fa-pencil" style="font-size: 22px;" data-original-title="Edit"></i>&nbsp;&nbsp;&nbsp;&nbsp;<i class="ui-tooltip fa fa-trash-o" style="font-size: 22px;" data-original-title="Delete"></i>'; }
+                 }
+            ]
+        });
+
+        $('#projectTable tbody').on('click', 'td', function () {
+            // check clicked element is either pencil or trash icon.
+            var checkPencilTd = $(this).find("i").hasClass('fa-pencil').toString();
+            var id =  $(this).parent().find("td:first").text();
+            
+            if(checkPencilTd != "true") {
+                // view project
+                location.href = "/home/Project?type=V&id=" + id;
+            }
+        } );       
+
+        $('#projectTable tbody').on('click', '.fa-pencil', function () {
+            var id =  $(this).parent().parent().find("td:first").text();
+            // view project
+            location.href = "/home/Project?type=E&id=" + id;
+        });
+
+        $('#projectTable tbody').on('click', '.fa-trash-o', function () {
+            var id =  $(this).parent().parent().find("td:first").text();
+            // ajax call to delete record
+            var result = confirm("Are you sure?");
+            if (result) {
+                //Logic to delete the item
+            }
+        });
+
+    </script>
+}
