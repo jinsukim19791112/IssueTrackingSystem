@@ -114,7 +114,6 @@
     <Compile Include="BL\Home\HomeHandler.cs" />
     <Compile Include="BL\Home\LoginHandler.cs" />
     <Compile Include="Controllers\HomeController.cs" />
-    <Compile Include="Controllers\MusicBookController.cs" />
     <Compile Include="DL\Home\ContactDataAddress.cs" />
     <Compile Include="DL\Home\LoginDataAccess.cs" />
     <Compile Include="Global.asax.cs">
@@ -167,7 +166,6 @@
     <Content Include="Views\Home\ProjectList.cshtml" />
     <Content Include="Views\Home\Incident.cshtml" />
     <Content Include="Views\Home\Project.cshtml" />
-    <Content Include="Views\MusicBook\Index.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
