@@ -1,7 +1,5 @@
-CREATE PROCEDURE [dbo].[GetConstants] 
+CREATE PROCEDURE [dbo].[GetProject] 
 (
-	--Input Parameter
-	@Category nvarchar(10),
 	@Result int=0 OUTPUT
 )
 AS
@@ -11,8 +9,8 @@ BEGIN
 	SET LOCK_TIMEOUT 20000;  
 
 	BEGIN TRY  		
-		SELECT Id, Name
-		FROM dbo.Constants WHERE Category = @Category
+		SELECT Id, Subject, Description, Status, SourceRespository, ReleasedVersion, UpdatedTimeStamp, StartTime, EndTime
+		FROM dbo.Project
 		SET @Result = 1
 		SELECT @Result AS Result
 	END TRY

@@ -17,22 +17,6 @@ namespace app.BL
             _contactDataAccess = contactDataAddress;
         }
 
-        public List<ProjectVM> GetProject(int pageNumber, int pageRows)
-        {
-            List<ProjectVM> result = new List<ProjectVM>();
-            for (int i = 1; i <= pageRows; i++)
-            {
-                ProjectVM item = new ProjectVM();
-                item.Id = i.ToString();
-                item.Name = "Name " + item.Id;
-                item.StartDate = "StartDate" + item.Id;
-                item.EndDate = "EndDate" + item.Id;
-                item.Status = "Status" + item.Id;
-                result.Add(item);
-            }            
-            return result;
-        }
-
         public List<IncidentVM> GetIncident(int pageNumber, int pageRows)
         {
             List<IncidentVM> result = new List<IncidentVM>();
