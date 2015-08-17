@@ -118,13 +118,12 @@
     <Compile Include="App_Start\FilterConfig.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="BL\Home\HomeHandler.cs" />
-    <Compile Include="BL\Home\LoginHandler.cs" />
     <Compile Include="Controllers\HomeController.cs" />
-    <Compile Include="DL\Home\ContactDataAddress.cs" />
-    <Compile Include="DL\Home\LoginDataAccess.cs" />
+    <Compile Include="DL\Home\HomnDataAddress.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
+    <Compile Include="Models\Constant.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ViewModel\Home\IncidentVM.cs" />
     <Compile Include="ViewModel\Home\ProjectVM.cs" />
@@ -142,6 +141,10 @@
     <Content Include="Scripts\bootstrap.js" />
     <Content Include="Scripts\bootstrap.min.js" />
     <Content Include="dbscripts\Users.sp" />
+    <Content Include="dbscripts\Project.sp" />
+    <Content Include="dbscripts\Constant.sp" />
+    <Content Include="dbscripts\CreateProject.sp" />
+    <Content Include="dbscripts\GetConstants.sp" />
     <None Include="Scripts\jquery-1.10.2.intellisense.js" />
     <Content Include="Scripts\jquery-1.10.2.js" />
     <Content Include="Scripts\jquery-1.10.2.min.js" />
@@ -177,9 +180,7 @@
   <ItemGroup>
     <Folder Include="App_Data\" />
     <Folder Include="BL\Jira\" />
-    <Folder Include="DL\Jira\" />
     <Folder Include="img\" />
-    <Folder Include="Models\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="fonts\glyphicons-halflings-regular.woff" />
