@@ -14,6 +14,13 @@ namespace app.Controllers
 {
     public class ProjectController : Controller
     {
+        private ProjectHandler _handler;
+
+        public ProjectController()
+        {
+            _handler = new ProjectHandler(new ProjectDataAccess(), new CommonDataAccess());
+        }
+
         // GET: Project
         public ActionResult Index()
         {
@@ -21,21 +28,58 @@ namespace app.Controllers
         }
 
         // GET: Project Detail for CRUD
-        public ActionResult Detail()
+        public ActionResult Detail(string id, string type)
         {
+
+            if (type == "E")
+            {
+                // Set DropDown List.
+                List<SelectListItem> statusDropDownList = _handler.GetAllStatus();
+                for (int i = 0; i < statusDropDownList.Count; i++)
+                {
+                    if (statusDropDownList[i].Value == id)
+                    {
+                        statusDropDownList[i].Selected = true;
+                    }
+                }
+                // Set Project View Model.
+                ProjectVM projectVM = _handler.GetProjectWithId(int.Parse(id));
+
+                // Set ViewBag.
+                ViewBag.PageType = type;
+                ViewBag.Name = projectVM.Name;
+                ViewBag.StartDate = projectVM.StartDate;
+                ViewBag.EndDate = projectVM.EndDate;
+                ViewBag.Description = projectVM.Description;
+                ViewBag.StatusDropDownList = statusDropDownList;
+            }
+
             return View();
         }
 
         [HttpGet]
         public ActionResult GetProjectTable()
         {
-            ProjectHandler handler = new ProjectHandler(new ProjectDataAccess(), new CommonDataAccess());
-            List<ProjectVM> viewModel = handler.GetProjectTable();
+            List<ProjectVM> viewModel = _handler.GetProjectTable();
 
             return Json(new
             {
                 aaData = viewModel.Select(x => new[] { x.Id, x.Name, x.StartDate, x.EndDate, x.Status })
             }, JsonRequestBehavior.AllowGet);
+        }
+
+        [HttpGet]
+        public JsonResult GetProjectWithID(int id)
+        {
+            // TODO Call DL to retrieve data.
+
+            ProjectVM viewModel = new ProjectVM();
+            viewModel.Name = "musicbook";
+            viewModel.StartDate = "2015-01-01";
+            viewModel.EndDate = "2015-12-31";
+            viewModel.Status = "Open";
+
+            return Json(viewModel, JsonRequestBehavior.AllowGet);
         }
 
         [HttpPost]
@@ -52,18 +96,6 @@ namespace app.Controllers
             return Json(new { code = "200", msg = "Transaction completed!" });
         }
 
-        [HttpGet]
-        public JsonResult GetProjectWithID(int id)
-        {
-            // TODO Call DL to retrieve data.
 
-            ProjectVM viewModel = new ProjectVM();
-            viewModel.Name = "musicbook";
-            viewModel.StartDate = "2015-01-01";
-            viewModel.EndDate = "2015-12-31";
-            viewModel.Status = "Open";
-
-            return Json(viewModel, JsonRequestBehavior.AllowGet);
-        }
     }
 }

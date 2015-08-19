@@ -3,97 +3,84 @@
 
 @section Scripts {
     <script type="text/javascript">
-        $("#startDate").datepicker();
-        $("#endDate").datepicker();
+    $("#startDate").datepicker();
+    $("#endDate").datepicker();
+
+    // process the form
+    $('form').submit(function (event) {
+
+        // get the form data
+        // there are many ways to get this data using jQuery (you can use the class or id also)
+        var formData = {
+            'name': $('input[name=name]').val(),
+            'startDate': $('input[name=startDate]').val(),
+            'endDate': $('input[name=endDate]').val(),
+        };
 
         // process the form
-        $('form').submit(function (event) {
-
-            // get the form data
-            // there are many ways to get this data using jQuery (you can use the class or id also)
-            var formData = {
-                'name': $('input[name=name]').val(),
-                'startDate': $('input[name=startDate]').val(),
-                'endDate': $('input[name=endDate]').val(),
-            };
-
-            // process the form
-            $.ajax({
-                type: 'POST', // define the type of HTTP verb we want to use (POST for our form)
-                url: '/home/NewProject', // the url where we want to POST
-                data: formData, // our data object
-                dataType: 'json', // what type of data do we expect back from the server
-                encode: true
-            })
-                // using the done promise callback
-                .done(function (data) {
-                    if (data.code == "200") {
-                        alert(data.msg);
-                        location.href = '/Home/ProjectList';
-                    }
-                }).fail(function () {
-                    alert("request failed.");
-                });
-
-            // stop the form from submitting the normal way and refreshing the page
-            event.preventDefault();
-        });
-
-        // Function to get url parameter
-        function getUrlParameter(sParam) {
-            var sPageURL = window.location.search.substring(1);
-            var sURLVariables = sPageURL.split('&');
-            for (var i = 0; i < sURLVariables.length; i++) {
-                var sParameterName = sURLVariables[i].split('=');
-                if (sParameterName[0] == sParam) {
-                    return sParameterName[1];
+        $.ajax({
+            type: 'POST', // define the type of HTTP verb we want to use (POST for our form)
+            url: '/Project/NewProject', // the url where we want to POST
+            data: formData, // our data object
+            dataType: 'json', // what type of data do we expect back from the server
+            encode: true
+        })
+            // using the done promise callback
+            .done(function (data) {
+                if (data.code == "200") {
+                    alert(data.msg);
+                    location.href = '/Project/Index';
                 }
+            }).fail(function () {
+                alert("request failed.");
+            });
+
+        // stop the form from submitting the normal way and refreshing the page
+        event.preventDefault();
+    });
+
+    // Function to get url parameter
+    function getUrlParameter(sParam) {
+        var sPageURL = window.location.search.substring(1);
+        var sURLVariables = sPageURL.split('&');
+        for (var i = 0; i < sURLVariables.length; i++) {
+            var sParameterName = sURLVariables[i].split('=');
+            if (sParameterName[0] == sParam) {
+                return sParameterName[1];
             }
         }
+    }
 
-        // Set Page Title N(New Page) E(Edit Page) V(View Page)
-        var pageType = getUrlParameter("type");
-        if (pageType == "N") {
-            $("#title").html("New Project");
-            $("#submitBtn").html("New");
-            $("#status").prop("disabled", true);
-            $("#description").prop("disabled", false);
-        }
-        else if (pageType == "E") {
-            $("#title").html("Edit Project");
-            $("#submitBtn").html("Edit");
-            var id = getUrlParameter("id");
-            RequestProjectDetail(id);
-            $("input").prop("disabled", false);
-            $("#description").prop("disabled", false);
-        }
-        else if (pageType == "V") {
-            $("#title").html("View Project");
-            var id = getUrlParameter("id");
-            RequestProjectDetail(id);
-            $("#submitBtn").hide();
-            $("input").prop("disabled", true);
-            $("#status").prop("disabled", true);
-            $("#description").prop("disabled", true);
-        }
+    // Set Page Title N(New Page) E(Edit Page) V(View Page)
+    var pageType = "@ViewBag.PageType";
+    if (pageType == "N") {
+        $("#title").html("New Project");
+        $("#submitBtn").html("New");
+        $("#status").prop("disabled", true);
+        $("#description").prop("disabled", false);
+    }
+    else if (pageType == "E") {
+        $("#title").html("Edit Project");
+        $("#submitBtn").html("Edit");
+        $("input").prop("disabled", false);
+        $("#description").prop("disabled", false);
+        SetProjectDetail();
+    }
+    else if (pageType == "V") {
+        $("#title").html("View Project");
+        $("#submitBtn").hide();
+        $("input").prop("disabled", true);
+        $("#status").prop("disabled", true);
+        $("#description").prop("disabled", true);
+        SetProjectDetail();
+    }
 
-        function RequestProjectDetail(id) {
-            $.ajax({
-                type: 'GET', // define the type of HTTP verb we want to use.
-                url: '/home/GetProjectWithID', // the url where we want to GET
-                data: {
-                    "id": id
-                }
-            })
-                // using the done promise callback
-                .done(function (data) {
-                    $('input[name=name]').val(data.Name);
-                    $('input[name=startDate]').val(data.StartDate);
-                    $('input[name=endDate]').val(data.EndDate);
-                }).fail(function () {
-                    alert("request failed.");
-                });
-        }
+    function SetProjectDetail() {
+        $('input[name=name]').val("@ViewBag.Name");
+        $('input[name=startDate]').val("@ViewBag.StartDate");
+        $('input[name=endDate]').val("@ViewBag.EndDate");
+        $('input[name=description]').val("@ViewBag.Description");
+    }
     </script>
 }
 
@@ -122,9 +109,7 @@
     <div class="form-group">
         <label for="status" class="col-sm-2 control-label">Status</label>
         <div class="col-sm-10">
-            <select class="form-control" name="status" id="status" value="@Request.Form["status"]">
-                <option>Open</option>
-            </select>
+            @Html.DropDownList("StatusDropDownList", null, new { @class = "form-control" })
         </div>
     </div>
     <div class="form-group">

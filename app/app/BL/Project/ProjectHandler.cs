@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
+using System.Web.Mvc;
 
 namespace app.BL.Project
 {
@@ -35,6 +36,29 @@ namespace app.BL.Project
                 viewModel.EndDate = model.EndTime.ToShortDateString();
                 viewModel.Status = GetStatus(model.Status);
                 result.Add(viewModel);
+            }
+
+            return result;
+        }
+
+        public ProjectVM GetProjectWithId(int id)
+        {
+            ProjectVM result = new ProjectVM();
+            ProjectModel model = _projectDataAccess.GetProjectWithId(id);
+            result.Id = model.Id.ToString();
+            result.Name = model.Subject;
+            result.StartDate = model.StartTime.ToShortDateString();
+            result.EndDate = model.EndTime.ToShortDateString();
+
+            return result;
+        }
+
+        public List<SelectListItem> GetAllStatus()
+        {
+            List<SelectListItem> result = new List<SelectListItem>();
+            foreach (var pair in _statusDictionary)
+            {
+                result.Add(new SelectListItem { Text = pair.Value, Value = pair.Key.ToString() });
             }
 
             return result;

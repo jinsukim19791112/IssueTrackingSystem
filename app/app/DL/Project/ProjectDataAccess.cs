@@ -48,5 +48,36 @@ namespace app.DL.Project
 
             return modelList;
         }
+
+        public ProjectModel GetProjectWithId(int id)
+        {
+            DatabaseProviderFactory factory = new DatabaseProviderFactory();
+            Database db = factory.Create("JIRA");
+            ProjectModel model = new ProjectModel();
+            using (DbCommand cmd = db.GetStoredProcCommand("[dbo].[GetProjectWithId]"))
+            {
+                cmd.CommandTimeout = dbTimeout;
+                db.AddInParameter(cmd, "@Id", DbType.Int32, id);
+                db.AddOutParameter(cmd, "@Result", DbType.Int32, Int32.MaxValue);
+                DataSet ds = db.ExecuteDataSet(cmd);
+
+                // DB returns 1 if there is no error.
+                int result = (int)db.GetParameterValue(cmd, "@Result");
+                if (result == 1)
+                {
+                    DataTable dt = ds.Tables[0];
+                    model.Id = (int)dt.Rows[0]["Id"];
+                    model.Subject = (string)dt.Rows[0]["Subject"];
+                    model.Status = (int)dt.Rows[0]["Status"];
+                    model.ReleasedVersion = (string)dt.Rows[0]["ReleasedVersion"];
+                    model.Description = (string)dt.Rows[0]["Description"];
+                    model.SourceRespository = (string)dt.Rows[0]["SourceRespository"];
+                    model.StartTime = (DateTime)dt.Rows[0]["StartTime"];
+                    model.EndTime = (DateTime)dt.Rows[0]["EndTime"];
+                    model.UpdatedTimeStamp = (DateTime)dt.Rows[0]["UpdatedTimeStamp"];
+                }
+            }
+            return model;
+        }
     }
 }

@@ -74,18 +74,18 @@
         $('#projectTable tbody').on('click', 'td', function () {
             // check clicked element is either pencil or trash icon.
             var checkPencilTd = $(this).find("i").hasClass('fa-pencil').toString();
-            var id =  $(this).parent().find("td:first").text();
+            var selectedId =  $(this).parent().find("td:first").text();
             
             if(checkPencilTd != "true") {
-                // view project
-                location.href = "/home/Project?type=V&id=" + id;
+                // view project detail page
+                location.href = "@Url.Action("Detail", "Project", new { id = " + selectedId + ", type = "V" })"
             }
         } );       
 
         $('#projectTable tbody').on('click', '.fa-pencil', function () {
             var id =  $(this).parent().parent().find("td:first").text();
             // view project
-            location.href = "/home/Project?type=E&id=" + id;
+            location.href = "/Project/Detail?type=E&id=" + id;
         });
 
         $('#projectTable tbody').on('click', '.fa-trash-o', function () {

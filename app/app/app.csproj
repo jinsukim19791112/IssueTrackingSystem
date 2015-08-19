@@ -117,6 +117,7 @@
     <Compile Include="App_Start\BundleConfig.cs" />
     <Compile Include="App_Start\FilterConfig.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
+    <Compile Include="BL\Common\CommonHandler.cs" />
     <Compile Include="BL\Home\HomeHandler.cs" />
     <Compile Include="BL\Project\ProjectHandler.cs" />
     <Compile Include="Controllers\ContactController.cs" />
@@ -133,6 +134,7 @@
     <Compile Include="Models\ConstantModel.cs" />
     <Compile Include="Models\ProjectModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="ViewModel\Common\ConstantViewModel.cs" />
     <Compile Include="ViewModel\Incident\IncidentVM.cs" />
     <Compile Include="ViewModel\Project\ProjectVM.cs" />
   </ItemGroup>
@@ -154,6 +156,7 @@
     <Content Include="dbscripts\CreateProject.sp" />
     <Content Include="dbscripts\GetConstant.sp" />
     <Content Include="dbscripts\GetProject.sp" />
+    <Content Include="dbscripts\GetProjectWithId.sp" />
     <None Include="Scripts\jquery-1.10.2.intellisense.js" />
     <Content Include="Scripts\jquery-1.10.2.js" />
     <Content Include="Scripts\jquery-1.10.2.min.js" />
