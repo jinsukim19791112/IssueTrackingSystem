@@ -1,86 +1,69 @@
-﻿<link rel="stylesheet" href="//code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css">
-<script src="//code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
+﻿<link href="~/Scripts/jquery-ui.min.css" rel="stylesheet" />
+<script src="~/Scripts/jquery-ui.min.js"></script>
+
+@model app.ViewModel.Home.ProjectVM
 
 @section Scripts {
     <script type="text/javascript">
-    $("#startDate").datepicker();
-    $("#endDate").datepicker();
-
-    // process the form
-    $('form').submit(function (event) {
-
-        // get the form data
-        // there are many ways to get this data using jQuery (you can use the class or id also)
-        var formData = {
-            'name': $('input[name=name]').val(),
-            'startDate': $('input[name=startDate]').val(),
-            'endDate': $('input[name=endDate]').val(),
-        };
+        $("#StartDate").datepicker();
+        $("#EndDate").datepicker();
 
         // process the form
-        $.ajax({
-            type: 'POST', // define the type of HTTP verb we want to use (POST for our form)
-            url: '/Project/NewProject', // the url where we want to POST
-            data: formData, // our data object
-            dataType: 'json', // what type of data do we expect back from the server
-            encode: true
-        })
-            // using the done promise callback
-            .done(function (data) {
-                if (data.code == "200") {
-                    alert(data.msg);
-                    location.href = '/Project/Index';
+        $('form').submit(function (event) {
+
+            // get the form data
+            // there are many ways to get this data using jQuery (you can use the class or id also)
+            var formData = $(this).serialize();
+
+            // process the form
+            $.ajax({
+                type: 'POST', // define the type of HTTP verb we want to use (POST for our form)
+                url: '/Project/SaveProject', // the url where we want to POST
+                data: formData, // our data object
+                dataType: 'json', // what type of data do we expect back from the server
+                encode: true
+            })
+                // using the done promise callback
+                .done(function (data) {
+                    if (data.code == "200") {
+                        alert(data.msg);
+                        location.href = '/Project/Index';
+                    }
+                }).fail(function () {
+                    alert("request failed.");
+                });
+
+            // stop the form from submitting the normal way and refreshing the page
+            event.preventDefault();
+        });
+
+        // Function to get url parameter
+        function getUrlParameter(sParam) {
+            var sPageURL = window.location.search.substring(1);
+            var sURLVariables = sPageURL.split('&');
+            for (var i = 0; i < sURLVariables.length; i++) {
+                var sParameterName = sURLVariables[i].split('=');
+                if (sParameterName[0] == sParam) {
+                    return sParameterName[1];
                 }
-            }).fail(function () {
-                alert("request failed.");
-            });
-
-        // stop the form from submitting the normal way and refreshing the page
-        event.preventDefault();
-    });
-
-    // Function to get url parameter
-    function getUrlParameter(sParam) {
-        var sPageURL = window.location.search.substring(1);
-        var sURLVariables = sPageURL.split('&');
-        for (var i = 0; i < sURLVariables.length; i++) {
-            var sParameterName = sURLVariables[i].split('=');
-            if (sParameterName[0] == sParam) {
-                return sParameterName[1];
             }
         }
-    }
 
-    // Set Page Title N(New Page) E(Edit Page) V(View Page)
-    var pageType = "@ViewBag.PageType";
-    if (pageType == "N") {
-        $("#title").html("New Project");
-        $("#submitBtn").html("New");
-        $("#status").prop("disabled", true);
-        $("#description").prop("disabled", false);
-    }
-    else if (pageType == "E") {
-        $("#title").html("Edit Project");
-        $("#submitBtn").html("Edit");
-        $("input").prop("disabled", false);
-        $("#description").prop("disabled", false);
-        SetProjectDetail();
-    }
-    else if (pageType == "V") {
-        $("#title").html("View Project");
-        $("#submitBtn").hide();
-        $("input").prop("disabled", true);
-        $("#status").prop("disabled", true);
-        $("#description").prop("disabled", true);
-        SetProjectDetail();
-    }
+        // Set Page Title N(New Page) E(Edit Page)
+        var pageType = "@ViewBag.PageType";
+        if (pageType == "N") {
+            $("#title").html("New Project");
+            $("#submitBtn").html("New");
+            $("#status").prop("disabled", true);
+            $("#description").prop("disabled", false);
+        }
+        else if (pageType == "E") {
+            $("#title").html("Edit Project");
+            $("#submitBtn").html("Edit");
+            $("input").prop("disabled", false);
+            $("#description").prop("disabled", false);
+        }
 
-    function SetProjectDetail() {
-        $('input[name=name]').val("@ViewBag.Name");
-        $('input[name=startDate]').val("@ViewBag.StartDate");
-        $('input[name=endDate]').val("@ViewBag.EndDate");
-        $('input[name=description]').val("@ViewBag.Description");
-    }
     </script>
 }
 
@@ -88,22 +71,25 @@
 <br />
 <br />
 <form class="form-horizontal">
+    <div>
+        <input type="hidden" name="Id" id="Id" value="@Model.Id">
+    </div>
     <div class="form-group">
         <label for="name" class="col-sm-2 control-label">Name</label>
         <div class="col-sm-10">
-            <input class="form-control" name="name" id="name" placeholder="Project Name" value="@Request.Form["name"]">
+            <input class="form-control" name="Name" id="Name" placeholder="Project Name" value="@Model.Name">
         </div>
     </div>
     <div class="form-group">
         <label for="startDate" class="col-sm-2 control-label">Start Date</label>
         <div class="col-sm-10">
-            <input class="form-control" name="startDate" id="startDate" placeholder="Start Date" value="@Request.Form["startDate"]">
+            <input class="form-control" name="StartDate" id="StartDate" placeholder="Start Date" value="@Model.StartDate">
         </div>
     </div>
     <div class="form-group">
         <label for="endDate" class="col-sm-2 control-label">End Date</label>
         <div class="col-sm-10">
-            <input class="form-control" name="endDate" id="endDate" placeholder="End Date" value="@Request.Form["endDate"]">
+            <input class="form-control" name="EndDate" id="EndDate" placeholder="End Date" value="@Model.EndDate">
         </div>
     </div>
     <div class="form-group">
@@ -113,15 +99,27 @@
         </div>
     </div>
     <div class="form-group">
+        <label for="endDate" class="col-sm-2 control-label">Source Repository</label>
+        <div class="col-sm-10">
+            <input class="form-control" name="SourceRespository" id="SourceRespository" placeholder="Source Repository" value="@Model.SourceRespository">
+        </div>
+    </div>
+    <div class="form-group">
+        <label for="endDate" class="col-sm-2 control-label">Released Version</label>
+        <div class="col-sm-10">
+            <input class="form-control" name="ReleasedVersion" id="ReleasedVersion" placeholder="Released Version" value="@Model.ReleasedVersion">
+        </div>
+    </div>
+    <div class="form-group">
         <label for="description" class="col-sm-2 control-label">Description</label>
         <div class="col-sm-10">
-            <textarea name="description" id ="description" class="form-control" rows="3"></textarea>
+            <textarea name="Description" id="Description" class="form-control" rows="3">@Model.Description</textarea>
         </div>
     </div>
     <div class="form-group">
         <div class="col-sm-offset-2 col-sm-10">
             <button id="submitBtn" type="submit" class="btn btn-success"></button>
-            <a href="/Home/ProjectList" id="backBtn" class="btn btn-default"><i class="fa fa-arrow-circle-o-left"></i>&nbsp;Back</a>
+            <a href="/Project/Index" id="backBtn" class="btn btn-default"><i class="fa fa-arrow-circle-o-left"></i>&nbsp;Back</a>
         </div>
     </div>
 </form>

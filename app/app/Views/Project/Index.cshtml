@@ -16,20 +16,20 @@
 
     .fa-pencil:hover {
         opacity: 1;
-    }
+     }
 
     .fa-trash-o {
         opacity: 0.5;
     }
 
-     .fa-trash-o:hover {
+    .fa-trash-o:hover {
         opacity: 1;
     }
 </style>
 <br />
 <div class="row">
     <div class="col-md-2">
-        <a class="btn btn-success" href="/home/Project?type=N" role="button">New</a>
+        <a class="btn btn-success" href="/Project/Detail?type=N" role="button">New</a>
     </div>
 </div>
 <div class="row">
@@ -57,7 +57,7 @@
 
         $('#projectTable').DataTable({
             bProcessing: true,
-            sAjaxSource: '@Url.Action("GetProjectTable", "Project")',
+            sAjaxSource: "/Project/GetProjectTable",
             aoColumns: [
                  { bSortable: false, },
                  { bSortable: false, },
@@ -75,12 +75,13 @@
             // check clicked element is either pencil or trash icon.
             var checkPencilTd = $(this).find("i").hasClass('fa-pencil').toString();
             var selectedId =  $(this).parent().find("td:first").text();
-            
+
             if(checkPencilTd != "true") {
                 // view project detail page
-                location.href = "@Url.Action("Detail", "Project", new { id = " + selectedId + ", type = "V" })"
+                var id =  $(this).parent().parent().find("td:first").text();
+                location.href = "/Project/Detail?type=E&id=" + id;
             }
-        } );       
+        } );
 
         $('#projectTable tbody').on('click', '.fa-pencil', function () {
             var id =  $(this).parent().parent().find("td:first").text();
@@ -93,7 +94,23 @@
             // ajax call to delete record
             var result = confirm("Are you sure?");
             if (result) {
-                //Logic to delete the item
+                // process the form
+                $.ajax({
+                    type: 'POST', // define the type of HTTP verb we want to use (POST for our form)
+                    url: '/Project/DeleteProject', // the url where we want to POST
+                    data: {"id" : id}, // our data object
+                    dataType: 'json', // what type of data do we expect back from the server
+                    encode: true
+                })
+                    // using the done promise callback
+                    .done(function (data) {
+                        if (data.code == "200") {
+                            alert(data.msg);
+                            location.href = '/Project/Index';
+                        }
+                    }).fail(function () {
+                        alert("request failed.");
+                    });
             }
         });
 

@@ -11,7 +11,14 @@ namespace app.ViewModel.Home
         public string Name { get; set; }
         public string StartDate { get; set; }
         public string EndDate { get; set; }
-        public string Status { get; set; }
+        public string StatusDropDownList { get; set; }
         public string Description { get; set; }
+        public string SourceRespository { get; set; }
+        public string ReleasedVersion { get; set; }
+
+        public ProjectVM()
+        {
+            Id = "0";
+        }
     }
 }

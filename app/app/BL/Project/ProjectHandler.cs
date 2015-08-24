@@ -20,7 +20,7 @@ namespace app.BL.Project
         {
             _projectDataAccess = projectDataAccess;
             _commonDataAccess = commonDataAccess;
-            _statusDictionary = commonDataAccess.GetConstant("Status");
+            _statusDictionary = _commonDataAccess.GetConstant("Status");
         }
 
         public List<ProjectVM> GetProjectTable()
@@ -34,11 +34,21 @@ namespace app.BL.Project
                 viewModel.Name = model.Subject;
                 viewModel.StartDate = model.StartTime.ToShortDateString();
                 viewModel.EndDate = model.EndTime.ToShortDateString();
-                viewModel.Status = GetStatus(model.Status);
+                viewModel.StatusDropDownList = GetStatus(model.Status);
                 result.Add(viewModel);
             }
-
             return result;
+        }
+
+        private string GetStatus(int key)
+        {
+            string status = string.Empty;
+            if (_statusDictionary.ContainsKey(key))
+            {
+                status = _statusDictionary[key];
+            }
+
+            return status;
         }
 
         public ProjectVM GetProjectWithId(int id)
@@ -49,7 +59,10 @@ namespace app.BL.Project
             result.Name = model.Subject;
             result.StartDate = model.StartTime.ToShortDateString();
             result.EndDate = model.EndTime.ToShortDateString();
-
+            result.Description = model.Description;
+            result.SourceRespository = model.SourceRespository;
+            result.ReleasedVersion = model.ReleasedVersion;
+            result.Description = model.Description;
             return result;
         }
 
@@ -60,19 +73,27 @@ namespace app.BL.Project
             {
                 result.Add(new SelectListItem { Text = pair.Value, Value = pair.Key.ToString() });
             }
-
             return result;
         }
 
-        private string GetStatus(int key)
+        public int UpsertProject(ProjectVM viewModel)
         {
-            string status = string.Empty;
-            if(_statusDictionary.ContainsKey(key))
-            {
-                status = _statusDictionary[key];
-            }
+            ProjectModel model = new ProjectModel();
+            model.Id = int.Parse(viewModel.Id);
+            model.Subject = viewModel.Name;
+            model.ReleasedVersion = viewModel.ReleasedVersion;
+            model.SourceRespository = viewModel.SourceRespository;
+            model.Description = viewModel.Description;
+            model.StartTime = DateTime.Parse(viewModel.StartDate);
+            model.EndTime = DateTime.Parse(viewModel.EndDate);
+            model.Status = int.Parse(viewModel.StatusDropDownList);
+            model.UpdatedTimeStamp = DateTime.Now;            
+            return _projectDataAccess.UpsertProject(model);
+        }
 
-            return status;
+        public int DeleteProject(int id)
+        {
+            return _projectDataAccess.DeleteProject(id);
         }
     }
 }
