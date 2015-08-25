@@ -6,13 +6,15 @@
     <title>@ViewBag.Title - JIRA</title>
     @Styles.Render("~/Content/css")
     @Scripts.Render("~/bundles/modernizr")
-    <link href="~/Content/font-awesome-4.4.0/css/font-awesome.min.css" rel="stylesheet" />
     @Scripts.Render("~/bundles/jquery")
     @Scripts.Render("~/bundles/bootstrap")
-    <!-- DataTables CSS -->
-    <link href="~/Content/DataTables-1.10.8/css/jquery.dataTables.min.css" rel="stylesheet" />
+
     <!-- DataTables -->
-    <script src="~/Content/DataTables-1.10.8/js/jquery.dataTables.min.js"></script>
+    <link href="//cdn.datatables.net/1.10.8/css/jquery.dataTables.min.css" rel="stylesheet" />
+    <script src="//cdn.datatables.net/1.10.8/js/jquery.dataTables.min.js"></script>
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
     <script src="~/js/prefixfree.min.js"></script>
 </head>
 <body>
@@ -30,7 +32,7 @@
                 <ul class="nav navbar-nav">
                     <li>@Html.ActionLink("Dashboard", "Index", "Dashboard")</li>
                     <li>@Html.ActionLink("Project", "Index", "Project")</li>
-                    <li>@Html.ActionLink("Incident", "Index", "Incident")</li>
+                    <li>@Html.ActionLink("My Account", "Index", "MyAccount")</li>
                     <li>@Html.ActionLink("Contact", "Index", "Contact")</li>
                 </ul>
             </div>

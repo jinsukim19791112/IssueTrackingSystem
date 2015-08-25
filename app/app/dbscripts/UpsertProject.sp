@@ -8,8 +8,6 @@ CREATE PROCEDURE [dbo].[UpsertProject]
 	@SourceRespository nvarchar(255),
 	@ReleasedVersion nvarchar(255),
 	@UpdatedTimeStamp datetime2,
-	@StartTime datetime2,
-	@EndTime datetime2,
 	@Result int=0 OUTPUT
 )
 AS
@@ -29,12 +27,10 @@ BEGIN
 				Status = @Status,
 				SourceRespository = @SourceRespository,
 				ReleasedVersion = @ReleasedVersion,
-				UpdatedTimeStamp = @UpdatedTimeStamp,
-				StartTime = @StartTime,
-				EndTime = @EndTime
+				UpdatedTimeStamp = @UpdatedTimeStamp
 			WHEN NOT MATCHED THEN
-				INSERT (Subject, Description, Status, SourceRespository, ReleasedVersion, UpdatedTimeStamp, StartTime, EndTime)
-				VALUES (@Subject, @Description, @Status, @SourceRespository, @ReleasedVersion, @UpdatedTimeStamp, @StartTime, @EndTime)
+				INSERT (Subject, Description, Status, SourceRespository, ReleasedVersion, UpdatedTimeStamp)
+				VALUES (@Subject, @Description, @Status, @SourceRespository, @ReleasedVersion, @UpdatedTimeStamp);
 		COMMIT TRAN;     
 		SET @Result = 1
 	END TRY

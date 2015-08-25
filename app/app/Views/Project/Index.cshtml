@@ -28,11 +28,6 @@
 </style>
 <br />
 <div class="row">
-    <div class="col-md-2">
-        <a class="btn btn-success" href="/Project/Detail?type=N" role="button">New</a>
-    </div>
-</div>
-<div class="row">
     <div class="col-md-10">
         <hr />
         <table id="projectTable" class="display">
@@ -40,8 +35,8 @@
                 <tr>
                     <th>Id</th>
                     <th>Name</th>
-                    <th>StartDate</th>
-                    <th>EndDate</th>
+                    <th>Source Repo</th>
+                    <th>Released Ver</th>
                     <th>Status</th>
                     <th>Action</th>
                 </tr>
@@ -50,11 +45,19 @@
         </table>
     </div>
 </div>
-
+<div class="row">
+    <div class="col-md-2">
+        <a class="btn btn-success" href="/Project/Detail?type=N" role="button">New Project</a>
+    </div>
+</div>
 @section Scripts {
     <script type="text/javascript">
         var data = @Html.Raw(Json.Encode(Model));
-
+        
+        // If you don't want your end users to see the alert() message, you can change DataTables' error reporting mechanism 
+        // to throw a Javascript error to the browser's console, rather than alerting it.
+        $.fn.dataTable.ext.errMode = 'throw';
+        
         $('#projectTable').DataTable({
             bProcessing: true,
             sAjaxSource: "/Project/GetProjectTable",
@@ -78,7 +81,7 @@
 
             if(checkPencilTd != "true") {
                 // view project detail page
-                var id =  $(this).parent().parent().find("td:first").text();
+                var id = $(this).parent().find("td:first").text();
                 location.href = "/Project/Detail?type=E&id=" + id;
             }
         } );

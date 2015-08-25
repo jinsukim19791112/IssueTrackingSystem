@@ -3,6 +3,20 @@
 
 @model app.ViewModel.Home.ProjectVM
 
+<style>
+    .fa-trash-o {
+        opacity: 0.5;
+    }
+
+        .fa-trash-o:hover {
+            opacity: 1;
+        }
+
+    tr:hover {
+        cursor: pointer;
+    }
+</style>
+
 @section Scripts {
     <script type="text/javascript">
         $("#StartDate").datepicker();
@@ -37,18 +51,6 @@
             event.preventDefault();
         });
 
-        // Function to get url parameter
-        function getUrlParameter(sParam) {
-            var sPageURL = window.location.search.substring(1);
-            var sURLVariables = sPageURL.split('&');
-            for (var i = 0; i < sURLVariables.length; i++) {
-                var sParameterName = sURLVariables[i].split('=');
-                if (sParameterName[0] == sParam) {
-                    return sParameterName[1];
-                }
-            }
-        }
-
         // Set Page Title N(New Page) E(Edit Page)
         var pageType = "@ViewBag.PageType";
         if (pageType == "N") {
@@ -64,63 +66,155 @@
             $("#description").prop("disabled", false);
         }
 
+        // Set Project Members Table
+        $('#ProjectMemberTable').DataTable({
+            bProcessing: true,
+            sAjaxSource: "/Project/GetProjectMember?projectId=" + @Model.Id,
+            aoColumns: [
+                 { bSortable: false, },
+                 { bSortable: false, },
+                 { bSortable: false, },
+                 { bSortable: false, },
+                 {
+                     bSortable: false,
+                     mRender: function (o) { return '<i class="fa fa-trash-o fa-lg"></i>'; }
+                 }
+            ]
+        });
+
+        // button handler to add project members
+        $("#ProjectMemberPopup").hide();
+        $("#btnOpenProjectMemberPopup").click(function(){
+            $("#ProjectMemberPopup").show();
+            $( "#ProjectMemberPopup").dialog({
+                resizable: false,
+                width: 500,
+                height:500
+            });
+            // Set Project Members Table
+            if ( !$.fn.dataTable.isDataTable( '#ProjectMemberPopupTable' ) ) {
+                SetAddProjectMemberTable()
+            }
+        });
+
+        function SetAddProjectMemberTable()
+        {
+            $('#ProjectMemberPopupTable').DataTable({
+                bProcessing: true,
+                sAjaxSource: "/Project/GetProjectMember?projectId=" + @Model.Id,
+                aoColumns: [
+                     { bSortable: false, },
+                     { bSortable: false, },
+                     { bSortable: false, },
+                     { bSortable: false, },
+                     {
+                         bSortable: false,
+                         mRender: function (o) { return '<div class="checkbox"><label><input type="checkbox"> add</label></div>'; }
+                     }
+                ]
+            });
+        }
+
     </script>
 }
 
 <h2 id="title"></h2>
 <br />
 <br />
-<form class="form-horizontal">
-    <div>
-        <input type="hidden" name="Id" id="Id" value="@Model.Id">
+<!-- Project Detail -->
+<div class="panel panel-default">
+    <div class="panel-heading">
+        <h3 class="panel-title"><i class="fa fa-chevron-right"></i>&nbsp; Project Detail</h3>
     </div>
-    <div class="form-group">
-        <label for="name" class="col-sm-2 control-label">Name</label>
-        <div class="col-sm-10">
-            <input class="form-control" name="Name" id="Name" placeholder="Project Name" value="@Model.Name">
+    <div class="panel-body">
+        <form class="form-horizontal">
+            <div>
+                <input type="hidden" name="Id" id="Id" value="@Model.Id">
+            </div>
+            <div class="form-group">
+                <label for="name" class="col-sm-2 control-label">Name</label>
+                <div class="col-sm-10">
+                    <input class="form-control" name="Name" id="Name" placeholder="Project Name" value="@Model.Name">
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="status" class="col-sm-2 control-label">Status</label>
+                <div class="col-sm-10">
+                    @Html.DropDownList("StatusDropDownList", null, new { @class = "form-control" })
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="endDate" class="col-sm-2 control-label">Source Repository</label>
+                <div class="col-sm-10">
+                    <input class="form-control" name="SourceRespository" id="SourceRespository" placeholder="Source Repository" value="@Model.SourceRespository">
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="endDate" class="col-sm-2 control-label">Released Version</label>
+                <div class="col-sm-10">
+                    <input class="form-control" name="ReleasedVersion" id="ReleasedVersion" placeholder="Released Version" value="@Model.ReleasedVersion">
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="description" class="col-sm-2 control-label">Description</label>
+                <div class="col-sm-10">
+                    <textarea name="Description" id="Description" class="form-control" rows="3">@Model.Description</textarea>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-offset-2 col-sm-10">
+                    <button id="submitBtn" type="submit" class="btn btn-success"></button>
+                    <a href="/Project/Index" id="backBtn" class="btn btn-default"><i class="fa fa-arrow-circle-o-left"></i>&nbsp;Back</a>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+<br />
+<!-- Project Member -->
+<div class="panel panel-default">
+    <div class="panel-heading">
+        <h3 class="panel-title"><i class="fa fa-user"></i>&nbsp; Project Members</h3>
+    </div>
+    <div class="panel-body">
+        <div class="row">
+            <div class="col-md-7">
+                <table id="ProjectMemberTable" class="display">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Email</th>
+                            <th>Role</th>
+                            <th>Dept</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-5">
+                <button id="btnOpenProjectMemberPopup" class="btn btn-success">Add Member</button>
+                <a href="/Project/Index" id="backBtn" class="btn btn-default"><i class="fa fa-arrow-circle-o-left"></i>&nbsp;Back</a>
+            </div>
         </div>
     </div>
-    <div class="form-group">
-        <label for="startDate" class="col-sm-2 control-label">Start Date</label>
-        <div class="col-sm-10">
-            <input class="form-control" name="StartDate" id="StartDate" placeholder="Start Date" value="@Model.StartDate">
-        </div>
-    </div>
-    <div class="form-group">
-        <label for="endDate" class="col-sm-2 control-label">End Date</label>
-        <div class="col-sm-10">
-            <input class="form-control" name="EndDate" id="EndDate" placeholder="End Date" value="@Model.EndDate">
-        </div>
-    </div>
-    <div class="form-group">
-        <label for="status" class="col-sm-2 control-label">Status</label>
-        <div class="col-sm-10">
-            @Html.DropDownList("StatusDropDownList", null, new { @class = "form-control" })
-        </div>
-    </div>
-    <div class="form-group">
-        <label for="endDate" class="col-sm-2 control-label">Source Repository</label>
-        <div class="col-sm-10">
-            <input class="form-control" name="SourceRespository" id="SourceRespository" placeholder="Source Repository" value="@Model.SourceRespository">
-        </div>
-    </div>
-    <div class="form-group">
-        <label for="endDate" class="col-sm-2 control-label">Released Version</label>
-        <div class="col-sm-10">
-            <input class="form-control" name="ReleasedVersion" id="ReleasedVersion" placeholder="Released Version" value="@Model.ReleasedVersion">
-        </div>
-    </div>
-    <div class="form-group">
-        <label for="description" class="col-sm-2 control-label">Description</label>
-        <div class="col-sm-10">
-            <textarea name="Description" id="Description" class="form-control" rows="3">@Model.Description</textarea>
-        </div>
-    </div>
-    <div class="form-group">
-        <div class="col-sm-offset-2 col-sm-10">
-            <button id="submitBtn" type="submit" class="btn btn-success"></button>
-            <a href="/Project/Index" id="backBtn" class="btn btn-default"><i class="fa fa-arrow-circle-o-left"></i>&nbsp;Back</a>
-        </div>
-    </div>
-</form>
-
+</div>
+<!-- Project Member Popup -->
+<div id="ProjectMemberPopup" title="Add Project Member">
+    <table id="ProjectMemberPopupTable" class="display">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Role</th>
+                <th>Dept</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody></tbody>
+    </table>
+    <button id="btnOpenProjectMemberPopup" class="btn btn-success">Save</button>
+</div>
+<br />

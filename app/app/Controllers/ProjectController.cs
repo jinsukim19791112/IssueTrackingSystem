@@ -1,8 +1,10 @@
 ﻿using app.BL;
+using app.BL.Common;
 using app.BL.Project;
 using app.DL;
 using app.DL.Home;
 using app.DL.Project;
+using app.ViewModel.Common;
 using app.ViewModel.Home;
 using System;
 using System.Collections.Generic;
@@ -14,11 +16,11 @@ namespace app.Controllers
 {
     public class ProjectController : Controller
     {
-        private ProjectHandler _handler;
+        private ProjectHandler _projectHandler;
 
         public ProjectController()
         {
-            _handler = new ProjectHandler(new ProjectDataAccess(), new CommonDataAccess());
+            _projectHandler = new ProjectHandler(new ProjectDataAccess(), new CommonDataAccess());
         }
 
         // GET: Project
@@ -31,7 +33,7 @@ namespace app.Controllers
         public ActionResult Detail(string id, string type)
         {
             ProjectVM viewModel = new ProjectVM();
-            List<SelectListItem> statusDropDownList = _handler.GetAllStatus();
+            List<SelectListItem> statusDropDownList = _projectHandler.GetAllStatus();
 
             // Edit page
             if (type == "E")
@@ -46,7 +48,7 @@ namespace app.Controllers
                 }
 
                 // Set Project View Model.
-                viewModel = _handler.GetProjectWithId(int.Parse(id));               
+                viewModel = _projectHandler.GetProjectWithId(int.Parse(id));
             }
 
             // Set ViewBag.
@@ -58,56 +60,37 @@ namespace app.Controllers
         [HttpGet]
         public ActionResult GetProjectTable()
         {
-            List<ProjectVM> viewModel = _handler.GetProjectTable();
+            var aaData = _projectHandler.GetProjectTable();
+            return Json(new
+                {
+                    aaData = aaData.Select(x => new[] { x.Id, x.Name, x.SourceRespository, x.ReleasedVersion, x.StatusDropDownList })
+                }, JsonRequestBehavior.AllowGet);
+        }
 
+        [HttpPost]
+        public ActionResult SaveProject(ProjectVM viewModel)
+        {
+            int statusCode = _projectHandler.UpsertProject(viewModel);
+            StatusMessage statusMessage = CommonHandler.GetStatusMessage(statusCode);
+            return Json(new { code = statusMessage.Code, msg = statusMessage.Message }, JsonRequestBehavior.AllowGet);
+        }
+
+        [HttpPost]
+        public ActionResult DeleteProject(int id)
+        {
+            int statusCode = _projectHandler.DeleteProject(id);
+            StatusMessage statusMessage = CommonHandler.GetStatusMessage(statusCode);
+            return Json(new { code = statusMessage.Code, msg = statusMessage.Message }, JsonRequestBehavior.AllowGet);
+        }
+
+        [HttpGet]
+        public ActionResult GetProjectMember(int projectId)
+        {
+            List<UserVM> aaData = _projectHandler.GetProjectMembers(projectId);
             return Json(new
             {
-                aaData = viewModel.Select(x => new[] { x.Id, x.Name, x.StartDate, x.EndDate, x.StatusDropDownList })
+                aaData = aaData.Select(x => new[] {x.Name, x.Email, x.Role, x.Dept })
             }, JsonRequestBehavior.AllowGet);
-        }
-
-        [HttpPost]
-        public JsonResult SaveProject(ProjectVM viewModel)
-        {
-            string code = string.Empty;
-            string msg = string.Empty;
-
-            int statusCode = _handler.UpsertProject(viewModel);
-            if (statusCode == 1)
-            {
-                code = "200";
-                msg = "Transaction completed!";
-            }
-            else
-            {
-                code = "500";
-                msg = "DB Error";
-            }
-
-            // Create Page Success. Redirect to Project Page.
-            return Json(new { code = code, msg = msg });
-        }
-
-        [HttpPost]
-        public JsonResult DeleteProject(int id)
-        {
-            string code = string.Empty;
-            string msg = string.Empty;
-
-            int statusCode = _handler.DeleteProject(id);
-            if (statusCode == 1)
-            {
-                code = "200";
-                msg = "Transaction completed!";
-            }
-            else
-            {
-                code = "500";
-                msg = "DB Error";
-            }
-
-            // Create Page Success. Redirect to Project Page.
-            return Json(new { code = code, msg = msg });
         }
     }
 }

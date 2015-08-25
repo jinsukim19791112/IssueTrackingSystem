@@ -14,7 +14,5 @@ namespace app.Models
         public string SourceRespository { get; set; }
         public string ReleasedVersion { get; set; }
         public DateTime UpdatedTimeStamp { get; set; }
-        public DateTime StartTime { get; set; }
-        public DateTime EndTime { get; set; }
     }
 }

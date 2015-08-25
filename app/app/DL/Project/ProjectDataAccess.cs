@@ -38,8 +38,6 @@ namespace app.DL.Project
                         model.ReleasedVersion = dt.Rows[i]["ReleasedVersion"].ToString();
                         model.Description = dt.Rows[i]["Description"].ToString();
                         model.SourceRespository = dt.Rows[i]["SourceRespository"].ToString();
-                        model.StartTime = (DateTime)dt.Rows[i]["StartTime"];
-                        model.EndTime = (DateTime)dt.Rows[i]["EndTime"];
                         model.UpdatedTimeStamp = (DateTime)dt.Rows[i]["UpdatedTimeStamp"];
                         modelList.Add(model);
                     }
@@ -72,8 +70,6 @@ namespace app.DL.Project
                     model.ReleasedVersion = dt.Rows[0]["ReleasedVersion"].ToString();
                     model.Description = dt.Rows[0]["Description"].ToString();
                     model.SourceRespository = dt.Rows[0]["SourceRespository"].ToString();
-                    model.StartTime = (DateTime)dt.Rows[0]["StartTime"];
-                    model.EndTime = (DateTime)dt.Rows[0]["EndTime"];
                     model.UpdatedTimeStamp = (DateTime)dt.Rows[0]["UpdatedTimeStamp"];
                 }
             }
@@ -95,13 +91,11 @@ namespace app.DL.Project
                 db.AddInParameter(cmd, "@SourceRespository", DbType.String, model.SourceRespository);
                 db.AddInParameter(cmd, "@ReleasedVersion", DbType.String, model.ReleasedVersion);
                 db.AddInParameter(cmd, "@UpdatedTimeStamp", DbType.DateTime2, model.UpdatedTimeStamp);
-                db.AddInParameter(cmd, "@StartTime", DbType.DateTime2, model.StartTime);
-                db.AddInParameter(cmd, "@EndTime", DbType.DateTime2, model.EndTime);
                 db.AddOutParameter(cmd, "@Result", DbType.Int32, Int32.MaxValue);
                 DataSet ds = db.ExecuteDataSet(cmd);
 
                 // DB returns 1 if there is no error.
-                result = (int)db.GetParameterValue(cmd, "@Result");                
+                result = (int)db.GetParameterValue(cmd, "@Result");
             }
             return result;
         }
@@ -122,6 +116,38 @@ namespace app.DL.Project
                 result = (int)db.GetParameterValue(cmd, "@Result");
             }
             return result;
+        }
+
+        public List<UserModel> GetProjectMembers(int projectId)
+        {
+            DatabaseProviderFactory factory = new DatabaseProviderFactory();
+            Database db = factory.Create("JIRA");
+            int result = 0;
+            List<UserModel> modelList = new List<UserModel>();
+            using (DbCommand cmd = db.GetStoredProcCommand("[dbo].[GetProjectMembersWithId]"))
+            {
+                cmd.CommandTimeout = dbTimeout;
+                db.AddInParameter(cmd, "@ProjectId", DbType.Int32, projectId);
+                db.AddOutParameter(cmd, "@Result", DbType.Int32, Int32.MaxValue);
+                DataSet ds = db.ExecuteDataSet(cmd);
+
+                // DB returns 1 if there is no error.
+                result = (int)db.GetParameterValue(cmd, "@Result");
+                if (result == 1)
+                {
+                    DataTable dt = ds.Tables[0];
+                    for (int i = 0; i < dt.Rows.Count; i++)
+                    {
+                        UserModel model = new UserModel();
+                        model.Name = dt.Rows[i]["Name"].ToString();
+                        model.Email = dt.Rows[i]["Email"].ToString();
+                        model.Dept = dt.Rows[i]["Dept"].ToString();
+                        model.Role = dt.Rows[i]["Role"].ToString();
+                        modelList.Add(model);
+                    }
+                }
+            }
+            return modelList;
         }
     }
 }

@@ -1,6 +1,7 @@
 ﻿using app.DL;
 using app.DL.Project;
 using app.Models;
+using app.ViewModel.Common;
 using app.ViewModel.Home;
 using System;
 using System.Collections.Generic;
@@ -32,8 +33,8 @@ namespace app.BL.Project
                 ProjectVM viewModel = new ProjectVM();
                 viewModel.Id = model.Id.ToString();
                 viewModel.Name = model.Subject;
-                viewModel.StartDate = model.StartTime.ToShortDateString();
-                viewModel.EndDate = model.EndTime.ToShortDateString();
+                viewModel.SourceRespository = model.SourceRespository;
+                viewModel.ReleasedVersion = model.ReleasedVersion;
                 viewModel.StatusDropDownList = GetStatus(model.Status);
                 result.Add(viewModel);
             }
@@ -57,8 +58,6 @@ namespace app.BL.Project
             ProjectModel model = _projectDataAccess.GetProjectWithId(id);
             result.Id = model.Id.ToString();
             result.Name = model.Subject;
-            result.StartDate = model.StartTime.ToShortDateString();
-            result.EndDate = model.EndTime.ToShortDateString();
             result.Description = model.Description;
             result.SourceRespository = model.SourceRespository;
             result.ReleasedVersion = model.ReleasedVersion;
@@ -84,8 +83,6 @@ namespace app.BL.Project
             model.ReleasedVersion = viewModel.ReleasedVersion;
             model.SourceRespository = viewModel.SourceRespository;
             model.Description = viewModel.Description;
-            model.StartTime = DateTime.Parse(viewModel.StartDate);
-            model.EndTime = DateTime.Parse(viewModel.EndDate);
             model.Status = int.Parse(viewModel.StatusDropDownList);
             model.UpdatedTimeStamp = DateTime.Now;            
             return _projectDataAccess.UpsertProject(model);
@@ -94,6 +91,23 @@ namespace app.BL.Project
         public int DeleteProject(int id)
         {
             return _projectDataAccess.DeleteProject(id);
+        }
+
+        public List<UserVM> GetProjectMembers(int projectId)
+        {
+            List<UserVM> result = new List<UserVM>();
+            List<UserModel> userModel = _projectDataAccess.GetProjectMembers(projectId);
+            foreach (UserModel model in userModel)
+            {
+                UserVM viewModel = new UserVM();
+                viewModel.Id = model.Id;
+                viewModel.Name = model.Name;
+                viewModel.Email = model.Email;
+                viewModel.Dept = model.Dept;
+                viewModel.Role = model.Role;
+                result.Add(viewModel);
+            }
+            return result;
         }
     }
 }

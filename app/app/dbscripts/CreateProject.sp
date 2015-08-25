@@ -7,8 +7,6 @@ CREATE PROCEDURE [dbo].[CreateProject]
 	@SourceRespository nvarchar(255),
 	@ReleasedVersion nvarchar(255),
 	@UpdatedTimeStamp datetime2,
-	@StartTime datetime2,
-	@EndTime datetime2,
 	@Result int=0 OUTPUT
 )
 AS
@@ -19,8 +17,8 @@ BEGIN
 
 	BEGIN TRY  
 		BEGIN TRAN   
-			INSERT INTO dbo.Project (Subject, Description, Status, SourceRespository, ReleasedVersion, UpdatedTimeStamp, StartTime, EndTime)
-			VALUES(@Subject, @Description, @Status, @SourceRespository, @ReleasedVersion, @UpdatedTimeStamp, @StartTime, @EndTime)
+			INSERT INTO dbo.Project (Subject, Description, Status, SourceRespository, ReleasedVersion, UpdatedTimeStamp)
+			VALUES(@Subject, @Description, @Status, @SourceRespository, @ReleasedVersion, @UpdatedTimeStamp)
 		COMMIT TRAN;     
 		SET @Result = 1
 	END TRY
