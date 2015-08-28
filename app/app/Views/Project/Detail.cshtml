@@ -19,9 +19,6 @@
 
 @section Scripts {
     <script type="text/javascript">
-        $("#StartDate").datepicker();
-        $("#EndDate").datepicker();
-
         // process the form
         $('form').submit(function (event) {
 
@@ -82,13 +79,22 @@
             ]
         });
 
+        // Delete Project Member
+        $('#ProjectMemberTable tbody').on('click', '.fa-trash-o', function () {
+            var id =  $(this).parent().parent().find("td:first").text();
+            // ajax call to delete record
+            var result = confirm("Are you sure?");
+            if (result) {
+            }
+        });
+
         // button handler to add project members
         $("#ProjectMemberPopup").hide();
         $("#btnOpenProjectMemberPopup").click(function(){
             $("#ProjectMemberPopup").show();
             $( "#ProjectMemberPopup").dialog({
                 resizable: false,
-                width: 500,
+                width:700,
                 height:500
             });
             // Set Project Members Table
@@ -99,14 +105,27 @@
 
         function SetAddProjectMemberTable()
         {
+            // role drop down list
+            var roleDropDownList = '<select class="form-control" id="RoleDropDownList" name="RoleDropDownList"><option value="">--Select role</option>';
+            var optionTags = new Array();
+            var roleArray = @Html.Raw(Json.Encode(@ViewBag.RoleDropDownList));
+            for(var i =0; i<roleArray.length;i++){
+                var option = '<option value="' + roleArray[i].Value + '">' + roleArray[i].Text + '</option>';
+                roleDropDownList += option;
+            }
+            roleDropDownList += '</select>';
+
             $('#ProjectMemberPopupTable').DataTable({
                 bProcessing: true,
-                sAjaxSource: "/Project/GetProjectMember?projectId=" + @Model.Id,
+                sAjaxSource: "/Project/GetAllUsers",
                 aoColumns: [
                      { bSortable: false, },
                      { bSortable: false, },
                      { bSortable: false, },
-                     { bSortable: false, },
+                     {
+                         bSortable: false,
+                         mRender: function (o) { return roleDropDownList; }
+                     },
                      {
                          bSortable: false,
                          mRender: function (o) { return '<div class="checkbox"><label><input type="checkbox"> add</label></div>'; }
@@ -184,8 +203,8 @@
                         <tr>
                             <th>Name</th>
                             <th>Email</th>
-                            <th>Role</th>
                             <th>Dept</th>
+                            <th>Role</th>
                             <th>Action</th>
                         </tr>
                     </thead>
@@ -208,8 +227,8 @@
             <tr>
                 <th>Name</th>
                 <th>Email</th>
-                <th>Role</th>
                 <th>Dept</th>
+                <th>Role</th>
                 <th>Action</th>
             </tr>
         </thead>

@@ -16,12 +16,14 @@ namespace app.BL.Project
         private ProjectDataAccess _projectDataAccess;
         private CommonDataAccess _commonDataAccess;
         private Dictionary<int, string> _statusDictionary;
+        private Dictionary<int, string> _roleDictionary;
 
         public ProjectHandler(ProjectDataAccess projectDataAccess, CommonDataAccess commonDataAccess)
         {
             _projectDataAccess = projectDataAccess;
             _commonDataAccess = commonDataAccess;
             _statusDictionary = _commonDataAccess.GetConstant("Status");
+            _roleDictionary = _commonDataAccess.GetConstant("Role");
         }
 
         public List<ProjectVM> GetProjectTable()
@@ -69,6 +71,16 @@ namespace app.BL.Project
         {
             List<SelectListItem> result = new List<SelectListItem>();
             foreach (var pair in _statusDictionary)
+            {
+                result.Add(new SelectListItem { Text = pair.Value, Value = pair.Key.ToString() });
+            }
+            return result;
+        }
+
+        public List<SelectListItem> GetRoles()
+        {
+            List<SelectListItem> result = new List<SelectListItem>();
+            foreach (var pair in _roleDictionary)
             {
                 result.Add(new SelectListItem { Text = pair.Value, Value = pair.Key.ToString() });
             }

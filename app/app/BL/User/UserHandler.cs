@@ -12,6 +12,11 @@ namespace app.BL.User
     {
         private UserDataAccess _userDataAccess;
 
+        public UserHandler(UserDataAccess userDataAccess)
+        {
+            _userDataAccess = userDataAccess;
+        }
+
         public List<UserVM> GetUsers()
         {
             List<UserVM> result = new List<UserVM>();

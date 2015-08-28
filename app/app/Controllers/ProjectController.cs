@@ -1,9 +1,11 @@
 ﻿using app.BL;
 using app.BL.Common;
 using app.BL.Project;
+using app.BL.User;
 using app.DL;
 using app.DL.Home;
 using app.DL.Project;
+using app.DL.User;
 using app.ViewModel.Common;
 using app.ViewModel.Home;
 using System;
@@ -17,10 +19,12 @@ namespace app.Controllers
     public class ProjectController : Controller
     {
         private ProjectHandler _projectHandler;
+        private UserHandler _userHandler;
 
         public ProjectController()
         {
             _projectHandler = new ProjectHandler(new ProjectDataAccess(), new CommonDataAccess());
+            _userHandler = new UserHandler(new UserDataAccess());
         }
 
         // GET: Project
@@ -34,6 +38,7 @@ namespace app.Controllers
         {
             ProjectVM viewModel = new ProjectVM();
             List<SelectListItem> statusDropDownList = _projectHandler.GetAllStatus();
+            List<SelectListItem> roleDropDownList = _projectHandler.GetRoles();
 
             // Edit page
             if (type == "E")
@@ -54,6 +59,8 @@ namespace app.Controllers
             // Set ViewBag.
             ViewBag.PageType = type;
             ViewBag.StatusDropDownList = statusDropDownList;
+            ViewBag.RoleDropDownList = roleDropDownList;
+
             return View(viewModel);
         }
 
@@ -90,6 +97,16 @@ namespace app.Controllers
             return Json(new
             {
                 aaData = aaData.Select(x => new[] {x.Name, x.Email, x.Role, x.Dept })
+            }, JsonRequestBehavior.AllowGet);
+        }
+
+        [HttpGet]
+        public ActionResult GetAllUsers()
+        {
+            List<UserVM> aaData = _userHandler.GetUsers();
+            return Json(new
+            {
+                aaData = aaData.Select(x => new[] { x.Name, x.Email, x.Dept })
             }, JsonRequestBehavior.AllowGet);
         }
     }

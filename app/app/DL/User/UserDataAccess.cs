@@ -39,7 +39,6 @@ namespace app.DL.User
                         model.Mobile = dt.Rows[i]["Mobile"].ToString();
                         model.Org = dt.Rows[i]["Org"].ToString();
                         model.Dept = dt.Rows[i]["Dept"].ToString();
-                        model.Status = (int)dt.Rows[i]["Status"];
                         modelList.Add(model);
                     }
                 }

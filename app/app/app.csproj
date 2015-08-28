@@ -220,11 +220,11 @@
     <Content Include="Views\Project\Detail.cshtml" />
     <Content Include="Views\Login\Index.cshtml" />
     <Content Include="Views\Sprint\Index.cshtml" />
+    <Content Include="Views\MyAccount\Index.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
     <Folder Include="ViewModel\Home\" />
-    <Folder Include="Views\MyAccount\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="fonts\glyphicons-halflings-regular.woff" />
